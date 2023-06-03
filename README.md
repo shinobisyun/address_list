@@ -1,6 +1,11 @@
+## 简介
+
+这是我的Flutter期末大作业，制作较为粗糙，有很多预想的功能还尚未实现。
+登录注册界面参考了https://github.com/abuanwar072/Welcome-Login-Signup-Page-Flutter
+
 # address_list
 
-An address book used to contact your roommates
+这是一个集通讯录和记事本功能的软件。
 
 ## Getting Started
 
