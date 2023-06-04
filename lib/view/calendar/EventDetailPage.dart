@@ -12,6 +12,7 @@ class EventDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventDate = DateTime.parse(event.time);
+    final eventEndTime = DateTime.parse(event.endTime);
     return Scaffold(
       appBar: AppBar(
         title: Text('日程详情'),
@@ -59,7 +60,7 @@ class EventDetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(defaultPadding),
         child: Column(
           children: <Widget>[
-            const SizedBox(height: defaultPadding * 2),
+            const SizedBox(height: defaultPadding),
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(defaultPadding),
@@ -68,11 +69,27 @@ class EventDetailPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Text(
-                '日期: ${DateFormat('yyyy-MM-dd HH:mm').format(eventDate)}',
+                '开始时间: ${DateFormat('yyyy-MM-dd HH:mm').format(eventDate)}',
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.white
                 )
+              ),
+            ),
+            const SizedBox(height: defaultPadding),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(defaultPadding),
+              decoration: BoxDecoration(
+                color: themeColor,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Text(
+                  '结束时间: ${DateFormat('yyyy-MM-dd HH:mm').format(eventEndTime)}',
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white
+                  )
               ),
             ),
             const SizedBox(height: defaultPadding),
@@ -108,7 +125,7 @@ class EventDetailPage extends StatelessWidget {
                     )
                 ),
               ),
-              flex: 8,
+              flex: 9,
             ),
             const Spacer()
           ],

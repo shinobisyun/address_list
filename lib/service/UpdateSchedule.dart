@@ -1,9 +1,10 @@
 import '../GlobalVariable.dart';
 
-Future<bool> UpdateSchedule(String time, String? place, String description, int scheduleID) async{
+Future<bool> UpdateSchedule(String time, String endTime, String? place, String description, int scheduleID) async{
   final table = 'calendar';
   Map<String, dynamic> values = {
     'time' : time,
+    'endTime' : endTime,
     'description' : description,
   };
   if(place != null){

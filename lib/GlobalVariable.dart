@@ -29,10 +29,11 @@ String? contactListPath;
 
 class Schedule{
   String time;
+  String endTime;
   String place;
   String description;
   int scheduleID;
-  Schedule({required this.time, this.place = "", required this.description, required this.scheduleID});
+  Schedule({required this.time, required this.endTime, this.place = "", required this.description, required this.scheduleID});
 }
 
 List<Schedule>? scheduleList = [];

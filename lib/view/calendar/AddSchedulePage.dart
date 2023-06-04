@@ -14,6 +14,7 @@ class AddSchedulePage extends StatefulWidget {
 class AddSchedulePageState extends State<AddSchedulePage>{
   final _formKey = GlobalKey<FormState>();
   final _dateController = TextEditingController();
+  final _endTimeController = TextEditingController();
   final _placeController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -37,6 +38,39 @@ class AddSchedulePageState extends State<AddSchedulePage>{
                 format: DateFormat('yyyy-MM-dd HH:mm'),
                 decoration: InputDecoration(
                     labelText: '时间',
+                    labelStyle: TextStyle(
+                        color: Colors.white70
+                    )
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+
+                ),
+                onShowPicker: (context, currentValue) async {
+                  final date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(1900),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime(2100));
+                  if (date != null) {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime:
+                      TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(date, time);
+                  } else {
+                    return currentValue;
+                  }
+                },
+              ),
+              const SizedBox(height: defaultPadding),
+
+              DateTimeField(
+                controller: _endTimeController,
+                format: DateFormat('yyyy-MM-dd HH:mm'),
+                decoration: InputDecoration(
+                    labelText: '结束时间',
                     labelStyle: TextStyle(
                         color: Colors.white70
                     )
@@ -95,9 +129,10 @@ class AddSchedulePageState extends State<AddSchedulePage>{
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final time = _dateController.text;
+                    final endTime = _endTimeController.text;
                     final place = _placeController.text;
                     final description = _descriptionController.text;
-                    final result = await AddSchedule(time, place, description);
+                    final result = await AddSchedule(time,endTime, place, description);
                     await PromptDialog(context, result ? '添加成功' : '添加失败');
                     Navigator.of(context).pop();
                   }

@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 ///保存数据库中的数据到本地Json文件中
 Future<void> SaveCalendarData() async{
   final table = 'calendar';
-  final columns = ['id','time', 'place', 'description', 'scheduleID'];
+  final columns = ['id','time','endTime', 'place', 'description', 'scheduleID'];
   final where = 'id = ${userID}';
   //获取应用程序的私有文件目录
   Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -21,6 +21,7 @@ Future<void> SaveCalendarData() async{
     List<Map<String, dynamic>> databaseData = result.map((row) => row.fields).toList();
     for(var date in databaseData){
       date['time'] = date['time'].toString();
+      date['endTime'] = date['endTime'].toString();
     }
     // 将数据转换为JSON字符串
     String jsonData = jsonEncode(databaseData);
@@ -45,7 +46,7 @@ Future<void> SaveCalendarData() async{
 ///读取数据库中的数据
 Future<void> ReadCalendarDataFromDB() async{
   final table = 'calendar';
-  final columns = ['id','time', 'place', 'description', 'scheduleID'];
+  final columns = ['id','time','endTime', 'place', 'description', 'scheduleID'];
   final where = 'id = ${userID}';
   // 从MySQL数据库中获取数据
   try {
@@ -85,6 +86,7 @@ List<Schedule> _parseSchedules(List<dynamic> jsonData) {
   return jsonData.map((item) {
     return Schedule(
         time: item['time'].toString(),
+        endTime: item['endTime'].toString(),
         place: item['place'] ?? "",
         description: item['description'],
         scheduleID: item['scheduleID']
