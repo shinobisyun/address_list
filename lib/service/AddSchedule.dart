@@ -1,11 +1,15 @@
 import '../GlobalVariable.dart';
 
-Future<bool> AddSchedule(String time, String? place, String description) async{
+Future<bool> AddSchedule(String time,String endTime, String? place, String description) async{
+  if(time == '' || endTime == '' || description == ''){
+    return false;
+  }
   final table = 'calendar';
   final values = {
     'id' : userID,
     'time' : time,
-    'place' : place == null ? null : place,
+    'endTime' : endTime,
+    'place' : place,
     'description' : description,
   };
 
@@ -18,6 +22,7 @@ Future<bool> AddSchedule(String time, String? place, String description) async{
     }
   }catch(e){   //未连接数据库
     print('Connection error: $e');
+    mysql.ConnectToDatabase();
     return false;
   }
 }

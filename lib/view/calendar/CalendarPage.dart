@@ -1,8 +1,9 @@
 import 'package:address_list/mapper/CalendarDataSynchronism.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';  // For date formatting
+import 'package:intl/intl.dart'; // For date formatting
 import '../../GlobalVariable.dart';
 import '../../component/AppBar.dart';
+import '../../service/DeleteSchedule.dart';
 import '../LoadingPage.dart';
 import 'EventDetailPage.dart';
 
@@ -14,23 +15,23 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  List<Schedule> events = [];  // This list will be populated from your database
+  List<Schedule> events = []; // This list will be populated from your database
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchEvents();  // Fetch events from database when the widget is initialized
+    fetchEvents(); // Fetch events from database when the widget is initialized
   }
 
   void fetchEvents() async {
-    try{
+    try {
       await mysql.connection!.query('SELECT * FROM calendar');
       await ReadCalendarDataFromDB();
-    }catch(e){
+    } catch (e) {
       await ReadCalendarDataFromJson();
     }
-    if(scheduleList != null){
+    if (scheduleList != null) {
       events.addAll(scheduleList!);
     }
     isLoading = false;
@@ -39,7 +40,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(isLoading == true){
+    if (isLoading == true) {
       return LoadingPage();
     }
     return Container(
@@ -49,37 +50,50 @@ class _CalendarPageState extends State<CalendarPage> {
           AppBarTool(currentIndexTitle: '日程'),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
+              (BuildContext context, int index) {
                 if (index == events.length) {
                   // 占位
                   return Container(height: 100);
-                }else {
-                  final event = events[index];
+                } else {
+                  Schedule event = events[index];
                   final eventDate = DateTime.parse(event.time);
                   final now = DateTime.now();
                   final difference = eventDate.difference(now);
-                  return Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: defaultPadding, vertical: 8.0),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          color: themeColor
-                      ),
-                      child: ListTile(
-                        title: Text(event.description,
-                          style: TextStyle(color: Colors.white),),
-                        subtitle: Text(
-                          '${event.place == '' ? '' : '地点: ${event.place}\n'}时间: ${DateFormat('yyyy-MM-dd').format(eventDate)}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        trailing: Text('还有${difference.inDays}天',
-                          style: TextStyle(color: Colors.white),),
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (
-                              context) => EventDetailPage(event: event)));
-                        },
-                      )
-                  );
+                  if (difference.inDays < 0) {   //自动删除过期事件
+                    DeleteSchedule(event);
+                    return Container(
+                      height: 0,
+                    );
+                  } else {
+                    return Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: defaultPadding, vertical: 8.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: themeColor),
+                        child: ListTile(
+                          title: Text(
+                            event.description,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          subtitle: Text(
+                            '${event.place == '' ? '' : '地点: ${event.place}\n'}时间: ${DateFormat('yyyy-MM-dd').format(eventDate)}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            '还有${difference.inDays}天',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onTap: () async {
+                            event = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        EventDetailPage(event: event)));
+                            setState(() {});
+                          },
+                        ));
+                  }
                 }
               },
               childCount: events.length + 1,

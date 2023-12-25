@@ -13,6 +13,7 @@ Future<bool> DeleteContact(Contact contact) async{
     }
   }catch(e){
     print('Delete contact error: $e');
+    mysql.ConnectToDatabase();
     return false;
   }
 }

@@ -28,6 +28,6 @@ class WelcomePageState extends State<WelcomePage> {
   }
 
   Future<void>_initDataBase() async{
-    connectResult = await mysql.ConnectToDatabase();
+    await mysql.ConnectToDatabase();
   }
 }

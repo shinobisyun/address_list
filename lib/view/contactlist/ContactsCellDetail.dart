@@ -2,25 +2,40 @@ import 'package:address_list/GlobalVariable.dart';
 import 'package:address_list/service/DeleteContact.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../component/MyHomePage.dart';
 import 'UpdateContactPage.dart';
 
-class ContactsCellDetail extends StatelessWidget{
-  const ContactsCellDetail({Key? key, required this.contact});
-  final contact;
+class ContactsCellDetail extends StatefulWidget {
+  ContactsCellDetail({Key? key, required this.contact});
+  Contact contact;
 
+  @override
+  State<ContactsCellDetail> createState() => ContactsCellDetailState();
+}
+
+class ContactsCellDetailState extends State<ContactsCellDetail>
+{
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appbarBGColor,
+        leading: IconButton(
+          tooltip: '返回上一页',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pop(context, widget.contact);
+          },
+        ),
         actions: [
           PopupMenuButton(
             onSelected: (value) async{
               if(value == 1){
-                Navigator.push(
+                widget.contact = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UpdateContactPage(contact: contact))
+                  MaterialPageRoute(builder: (context) => UpdateContactPage(contact: widget.contact))
                 );
+                setState((){});
               }
               else if(value == 2){
                 final confirmDelete = await showDialog<bool>(
@@ -40,8 +55,18 @@ class ContactsCellDetail extends StatelessWidget{
                   ),
                 );
                 if (confirmDelete == true) {
-                  if(await DeleteContact(contact)){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('删除成功')));
+                  if(await DeleteContact(widget.contact)){
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('删除成功')));   // 如果成功就跳转并重加载页面
+                    Navigator.pushAndRemoveUntil(   //新建路由，删除之前的路由
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                          settings:RouteSettings(
+                            arguments: 2,
+                          )
+                      ),
+                          (Route<dynamic> route) => false,
+                    );
                   }else{
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('删除失败')));
                   }
@@ -82,7 +107,7 @@ class ContactsCellDetail extends StatelessWidget{
               backgroundColor: Colors.grey[700],   //背景颜色（没头像时）
               radius: 50,
               child: Text(
-                contact.name!.substring(contact.name!.length-1),   //选取最后一个字
+                widget.contact.name!.substring(widget.contact.name!.length-1),   //选取最后一个字
                 style: TextStyle(
                     fontSize: 45,
                     fontWeight: FontWeight.bold
@@ -92,7 +117,7 @@ class ContactsCellDetail extends StatelessWidget{
             const SizedBox(height: defaultPadding),
 
             Text(
-              contact.name!,
+              widget.contact.name!,
               style: TextStyle(
                 color: Colors.white,
                 fontSize:35,
@@ -122,7 +147,7 @@ class ContactsCellDetail extends StatelessWidget{
 
                       ListTile(
                         title: Text(
-                          contact.phoneNumber!,
+                          widget.contact.phoneNumber!,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -133,7 +158,7 @@ class ContactsCellDetail extends StatelessWidget{
                           children: [
                             IconButton(
                               onPressed: (){
-                                launch("tel:${contact.phoneNumber}");
+                                launch("tel:${widget.contact.phoneNumber}");
                               },
                               icon:Icon(Icons.phone_outlined),
                               color: Colors.white,
@@ -149,11 +174,11 @@ class ContactsCellDetail extends StatelessWidget{
                       ),
 
                       Container(
-                        height: contact.remark == "" ? 0 : 75,
+                        height: widget.contact.remark == "" ? 0 : 75,
                         //color: Colors.red,
                         child: ListTile(
                           title: Text(
-                            contact.remark == "" ? '' : contact.remark!,
+                            widget.contact.remark == "" ? '' : widget.contact.remark!,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -171,7 +196,7 @@ class ContactsCellDetail extends StatelessWidget{
 
                       Container(
                         width: double.infinity,
-                        height: contact.remark == "" ? 0 : 1,
+                        height: widget.contact.remark == "" ? 0 : 1,
                         color: Colors.grey[800],
                       ),
                     ],

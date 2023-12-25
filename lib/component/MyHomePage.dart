@@ -25,12 +25,18 @@ class _MyHomePageState extends State<MyHomePage> {
     CalendarPage(),
     AddressBookPage(),
   ];
+  bool isFirst = true;
+  BuildContext? ct;
 
   @override
   Widget build(BuildContext context) {
+    if(isFirst){
+      isFirst = false;
+      ct = context;
+      _initState();
+    }
     return Scaffold(
       body: pages[selectedIndex],
-
       bottomNavigationBar: BottomNavigationBarTool(
         cur: selectedIndex,
         onPress: (index){
@@ -43,5 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: CustomFloatingButton(context, selectedIndex)
     );
+  }
+  void _initState(){
+    int? passedValue = ModalRoute.of(context)!.settings.arguments as int?;   //接受Navigator.push的传值
+    if(passedValue != null){
+      selectedIndex = passedValue;
+    }
   }
 }

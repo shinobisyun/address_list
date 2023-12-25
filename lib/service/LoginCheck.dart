@@ -28,6 +28,7 @@ Future<int> LoginCheck(TextEditingController usr,TextEditingController psd) asyn
     }
   }catch(e){
     print('Connection error: $e');
+    mysql.ConnectToDatabase();
     return -1;
   }
 }

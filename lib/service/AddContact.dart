@@ -1,6 +1,6 @@
 import '../GlobalVariable.dart';
 
-Future<bool> AddContact(String name, String phoneNumber, String? remark) async{
+Future<AddContactResult?> AddContact(String name, String phoneNumber, String? remark) async{
   final table = 'telephonelist';
   final values = {
     'id' : userID,
@@ -9,22 +9,27 @@ Future<bool> AddContact(String name, String phoneNumber, String? remark) async{
     'remark' : remark ?? '',
     'indexLetter' : name[0].toUpperCase()
   };
-
+  final where1 = 'id = $userID and telephoneNumber = $phoneNumber';
+  final where2 = "id = $userID and nickName = '$name'";
   try{
-    final query = await mysql.Select(table, where: 'id = $userID and telephoneNumber = $phoneNumber');
-    if(query.isEmpty){
+    final query1 = await mysql.Select(table, where: where1);
+    final query2 = await mysql.Select(table, where: where2);
+    if(query1.isEmpty && query2.isEmpty){
       final result = await mysql.Insert(table, values);
       if(result == 0){   //添加失败
-        return false;
+        return AddContactResult.addError;
       }else{    //添加成功
-        return true;
+        return AddContactResult.addSuccess;
       }
-    }else{
-      return false;
+    }else if(query1.isEmpty == false){
+      return AddContactResult.alreadyPhone;
+    }else if(query2.isEmpty == false){
+      return AddContactResult.alreadyName;
     }
   }catch(e){   //未连接数据库
     print('Connection error: $e');
-    return false;
+    mysql.ConnectToDatabase();
+    return AddContactResult.connectError;
   }
 }
 
