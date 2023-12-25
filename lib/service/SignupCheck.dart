@@ -15,6 +15,7 @@ Future<int> SignupCheck(String phonenumber, String password) async{
      return result;   //注册成功
   }catch(e) {   //未连接数据库
     print('Connection error: $e');
+    mysql.ConnectToDatabase();
     return -1;
   }
 }

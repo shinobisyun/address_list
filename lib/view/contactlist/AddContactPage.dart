@@ -1,3 +1,4 @@
+import 'package:address_list/component/MyHomePage.dart';
 import 'package:address_list/component/PromptDialog.dart';
 import 'package:flutter/material.dart';
 import '../../GlobalVariable.dart';
@@ -39,8 +40,31 @@ class AddContactPageState extends State<AddContactPage>{
                   isLoading = true;
                 });
                 var result = await AddContact(name!,phoneNumber!,remark);
-                await PromptDialog(context, result ? '添加成功' : '添加失败');
-                Navigator.of(context).pop();
+                if(result == AddContactResult.addSuccess){
+                  await PromptDialog(context, '添加成功');
+                  Navigator.pushAndRemoveUntil(   //新建路由，删除之前的路由
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MyHomePage(),
+                        settings:RouteSettings(
+                          arguments: 2,
+                        )
+                    ),
+                        (Route<dynamic> route) => false,
+                  );
+                }
+                else if(result == AddContactResult.alreadyName){
+                  await PromptDialog(context, '名字已存在');
+                }
+                else if(result == AddContactResult.alreadyPhone){
+                  await PromptDialog(context, '电话号码已存在');
+                }
+                else if(result == AddContactResult.addError){
+                  await PromptDialog(context, '添加失败');
+                }
+                else if(result == AddContactResult.connectError){
+                  await PromptDialog(context, '数据库连接错误');
+                }
               }
               setState(() {
                 isLoading = false;

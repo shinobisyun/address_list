@@ -1,25 +1,27 @@
 import '../GlobalVariable.dart';
 
-Future<bool> UpdateSchedule(String time, String endTime, String? place, String description, int scheduleID) async{
+Future<bool> UpdateSchedule(Schedule schedule) async{
+  if(schedule.time == '' || schedule.endTime == '' || schedule.description == ''){
+    return false;
+  }
   final table = 'calendar';
   Map<String, dynamic> values = {
-    'time' : time,
-    'endTime' : endTime,
-    'description' : description,
+    'time' : schedule.time,
+    'endTime' : schedule.endTime,
+    'description' : schedule.description,
+    'place' : schedule.place
   };
-  if(place != null){
-    values.putIfAbsent('place', () => place);
-  }
-  final condition = 'scheduleID = $scheduleID';
+  final condition = 'scheduleID = ${schedule.scheduleID}';
   try{
     final result = await mysql.update(table, values, condition);
-    if(result == 0){   //修改失败
-      return false;
-    }else{    //修改成功
+    if(result > 0){   //修改成功
       return true;
+    }else{    //修改失败
+      return false;
     }
   }catch(e){   //未连接数据库
     print('Connection error: $e');
+    mysql.ConnectToDatabase();
     return false;
   }
 }

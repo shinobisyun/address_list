@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../GlobalVariable.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';  // For date formatting
+import '../../component/MyHomePage.dart';
 import '../../service/AddSchedule.dart';
 import 'CalendarPage.dart';
 
@@ -134,7 +135,18 @@ class AddSchedulePageState extends State<AddSchedulePage>{
                     final description = _descriptionController.text;
                     final result = await AddSchedule(time,endTime, place, description);
                     await PromptDialog(context, result ? '添加成功' : '添加失败');
-                    Navigator.of(context).pop();
+                    if(result){
+                      Navigator.pushAndRemoveUntil(   //新建路由，删除之前的路由
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyHomePage(),
+                            settings:RouteSettings(
+                              arguments: 1,
+                            )
+                        ),
+                            (Route<dynamic> route) => false,
+                      );
+                    }
                   }
                 },
                 child: Text('提交'),

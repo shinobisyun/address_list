@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 ///保存数据库中的数据到本地Json文件中
 Future<void> SaveContactData() async{
   final table = 'telephonelist';
-  final columns = ['id','telephoneNumber', 'nickname', 'remark', 'indexLetter'];
+  final columns = ['id','telephoneNumber', 'nickname', 'remark', 'indexLetter', 'telephonelistID'];
   final where = 'id = ${userID}';
   //获取应用程序的私有文件目录
   Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -42,7 +42,7 @@ Future<void> SaveContactData() async{
 ///读取数据库中的数据
 Future<void> ReadContactDataFromDB() async{
   final table = 'telephonelist';
-  final columns = ['id','telephoneNumber', 'nickname', 'remark', 'indexLetter'];
+  final columns = ['id','telephoneNumber', 'nickname', 'remark', 'indexLetter', 'telephonelistID'];
   final where = 'id = ${userID}';
   // 从MySQL数据库中获取数据
   try {
@@ -84,7 +84,8 @@ List<Contact> _parseContacts(List<dynamic> jsonData) {
         name: item['nickname'],
         phoneNumber: item['telephoneNumber'],
         indexLetter: item['indexLetter'],
-        remark: item['remark'] ?? ''
+        remark: item['remark'] ?? '',
+        contactID: item['telephonelistID'],
     );
   }).toList();
 }

@@ -4,21 +4,14 @@ import '../../component/PromptDialog.dart';
 import '../../service/UpdateContact.dart';
 
 class UpdateContactPage extends StatefulWidget{
-  const UpdateContactPage({required this.contact});
-  final contact;
+  UpdateContactPage({required this.contact});
+  Contact contact;
   @override
   State<UpdateContactPage> createState() => UpdateContactPageState();
 }
 
 class UpdateContactPageState extends State<UpdateContactPage> {
   bool isLoading = true;
-  Contact? _contact;
-
-  @override
-  void initState() {
-    super.initState();
-    _contact = widget.contact;
-  }
 
   @override
   Widget build(BuildContext context){
@@ -35,17 +28,18 @@ class UpdateContactPageState extends State<UpdateContactPage> {
         actions: [
           IconButton(
             onPressed: isLoading ? null : () async{
-              if(_contact!.phoneNumber != null && _contact!.phoneNumber.length != 11){
+              if(widget.contact!.phoneNumber != null && widget.contact!.phoneNumber.length != 11){
                 PromptDialog(context, '请输入电话号码');
               } else{
                 setState(() {
                   isLoading = true;
                 });
-                var result = await UpdateContact(_contact!);
+                var result = await UpdateContact(widget.contact!);
                 if(result){
-                  PromptDialog(context, '修改成功');
+                  await PromptDialog(context, '修改成功');
+                  Navigator.pop(context, widget.contact);
                 }else{
-                  PromptDialog(context, '修改失败');
+                  await PromptDialog(context, '修改失败');
                 }
               }
               setState(() {
@@ -73,12 +67,12 @@ class UpdateContactPageState extends State<UpdateContactPage> {
                     child: Column(
                       children: [
                         TextFormField(         //昵称
-                          initialValue: _contact!.name,   //原本的值
+                          initialValue: widget.contact!.name,   //原本的值
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           cursorColor: Colors.lightGreen,
                           onChanged: (input) {
-                            _contact!.name = input;
+                            widget.contact!.name = input;
                             setState(() {
                               isLoading = false;
                             });
@@ -97,12 +91,12 @@ class UpdateContactPageState extends State<UpdateContactPage> {
                         const SizedBox(height: defaultPadding),
 
                         TextFormField(
-                          initialValue: _contact!.phoneNumber,   //原本的值
+                          initialValue: widget.contact!.phoneNumber,   //原本的值
                           keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.next,
                           cursorColor: Colors.lightGreen,
                           onChanged: (input){
-                            _contact!.phoneNumber = input;
+                            widget.contact!.phoneNumber = input;
                             setState(() {
                               isLoading = false;
                             });
@@ -122,12 +116,12 @@ class UpdateContactPageState extends State<UpdateContactPage> {
                         const SizedBox(height: defaultPadding),
 
                         TextFormField(
-                          initialValue: _contact!.remark,   //原本的值
+                          initialValue: widget.contact!.remark,   //原本的值
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.go,
                           cursorColor: Colors.lightGreen,
                           onChanged: (input){
-                            _contact!.remark = input;
+                            widget.contact!.remark = input;
                             setState(() {
                               isLoading = false;
                             });

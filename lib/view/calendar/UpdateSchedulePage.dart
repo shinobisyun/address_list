@@ -3,7 +3,6 @@ import 'package:address_list/component/PromptDialog.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../../service/UpdateSchedule.dart';
 
 
@@ -13,7 +12,7 @@ class UpdateSchedulePage extends StatelessWidget {
   final _endTimeController = TextEditingController();
   final _placeController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final Schedule event;
+  Schedule event;
 
   UpdateSchedulePage({super.key, required this.event}) {
     _dateController.text = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(event.time));
@@ -126,12 +125,15 @@ class UpdateSchedulePage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final time = _dateController.text;
-                    final endTime = _endTimeController.text;
-                    final place = _placeController.text;
-                    final description = _descriptionController.text;
-                    final result = await UpdateSchedule(time,endTime, place, description, event.scheduleID);  // You need to implement this method
-                    PromptDialog(context, result ? '修改成功' : '修改失败');
+                    event.time = _dateController.text;
+                    event.endTime = _endTimeController.text;
+                    event.place = _placeController.text;
+                    event.description = _descriptionController.text;
+                    final result = await UpdateSchedule(event);  // You need to implement this method
+                    await PromptDialog(context, result ? '修改成功' : '修改失败');
+                    if(result){
+                      Navigator.pop(context, event);
+                    }
                   }
                 },
                 child: Text('提交'),
